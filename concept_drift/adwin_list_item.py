@@ -7,10 +7,12 @@ class AdwinListItem:
         self.bucket_size_row = 0
 
         self.next = next
+        # add the 'previous' connection of the following list item to this item
         if next is not None:
             next.previous = self
 
         self.previous = previous
+        # add the 'next' connection of the previous list item to this item
         if previous is not None:
             previous.next = self
 

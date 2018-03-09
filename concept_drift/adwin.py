@@ -19,10 +19,16 @@ class Adwin:
         self.min_clock = min_clock
         self.min_length_window = min_length_window
         self.min_length_sub_window = min_length_sub_window
+        # time is used for comparison with min_clock parameter
         self.time = 0
+        # width of the window
         self.width = 0
+        # sum of all values in the window
         self.total = 0.0
+        # incremental variance of all values in the window
         self.variance = 0.0
+        # number of buckets that held the values
+        # this value has the upper limit set by max_buckets
         self.bucket_number = 0
         # last_bucket_row: defines the max number of merged
         self.last_bucket_row = 0
@@ -36,6 +42,12 @@ class Adwin:
         return self.__reduce_window()
 
     def __insert_element(self, value):
+        """
+        Insert a new element by creating a new bucket for the head element of the list. The overall variance and
+        total value are updated incrementally. At the end, buckets maybe compressed (merged) if the maximum number of
+        buckets has been reached.
+        :param value: new data value from the stream
+        """
         self.width += 1
         # Insert the new bucket
         self.list_row_buckets.head.insert_bucket(value, 0)
@@ -48,12 +60,12 @@ class Adwin:
             ) / self.width
         self.variance += incremental_variance
         self.total += value
+        # compress (merge) buckets if necessary
         self.__compress_buckets()
 
     def __compress_buckets(self):
-        """Merging two buckets corresponds to creating a new bucket whose size is equal to
-        the sum of the sizes of those two buckets.
-        The size of bucket means that it contains how many original data
+        """Merging two buckets corresponds to creating a new bucket whose size is equal to the sum of the sizes of
+        those two buckets. The size of a bucket means how many original data is contained inside it.
         """
         cursor = self.list_row_buckets.head
         i = 0
@@ -65,6 +77,8 @@ class Adwin:
                 next_node = cursor.next
                 if next_node is None:
                     self.list_row_buckets.add_to_tail()
+                    # new list item was added to the list
+                    # hence, next pointer has been reset now to this new tail
                     next_node = cursor.next
                     self.last_bucket_row += 1
 
@@ -124,6 +138,7 @@ class Adwin:
         return is_changed
 
     def __reduce_expression(self, n0, n1, diff_value):
+        # harmonic mean of n0 and n1 (originally 1 / (1/n0 + 1/n1))
         m = 1 / (n0 - self.min_length_sub_window + 1) + 1 / (n1 - self.min_length_sub_window + 1)
         d = log(2 * log(self.width) / self.delta)
         variance = self.variance / self.width

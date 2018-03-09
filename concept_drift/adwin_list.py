@@ -18,6 +18,7 @@ class AdwinList:
     def add_to_head(self):
         """Add the object at the beginning of the window
         """
+        # TODO: this code is only called once in init. Should it be removed and hence also shortened as we do not need to check for self.tail is None (it is always the case!)?
         self.head = AdwinListItem(self.max_buckets, next=self.head)
         if self.tail is None:
             self.tail = self.head
