@@ -17,4 +17,4 @@ config = {
     'name': 'ConceptDrift'
 }
 
-setup(**config)
+setup(**config, requires=['numpy'])
