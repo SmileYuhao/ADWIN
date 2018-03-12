@@ -60,9 +60,7 @@ class Adwin:
         # Calculate the incremental variance
         incremental_variance = 0
         if self.width > 1:
-            incremental_variance = (self.width - 1) * (
-                (value - self.total / (self.width - 1)) * (value - self.total / (self.width - 1))
-            ) / self.width
+            incremental_variance = (self.width - 1) * pow(2, (value - self.total / (self.width - 1))) / self.width
         self.variance += incremental_variance
         self.total += value
         # compress (merge) buckets if necessary
@@ -184,9 +182,9 @@ class Adwin:
         self.total -= node.bucket_total[0]
         deleted_element_mean = node.bucket_total[0] / deleted_number
 
-        incremental_variance = node.bucket_variance[0] + deleted_number * self.width * (
-            (deleted_element_mean - self.total / self.width) * (deleted_element_mean - self.total / self.width)
-        ) / (deleted_number + self.width)
+        incremental_variance = node.bucket_variance[0] + deleted_number * self.width * \
+                                                         pow(2, (deleted_element_mean - self.total / self.width)) / \
+                                                         (deleted_number + self.width)
         self.variance -= incremental_variance
         # Delete bucket
         node.compress_buckets_row(1)
