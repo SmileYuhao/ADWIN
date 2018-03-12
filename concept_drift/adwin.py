@@ -84,14 +84,22 @@ class Adwin:
 
                 n1 = pow(2, i)
                 n2 = pow(2, i)
+
+                # consider values from buckets 0 and 1 as these are the heading bucket elements inside a list item
                 u1 = cursor.bucket_total[0] / n1
                 u2 = cursor.bucket_total[1] / n2
 
                 external_variance = n1 * n2 * (u1 - u2) * (u1 - u2) / (n1 + n2)
+
+                # create and insert a new bucket into the next list item
                 next_node.insert_bucket(cursor.bucket_total[0] + cursor.bucket_total[1],
                                         cursor.bucket_variance[0] + cursor.bucket_variance[1] + external_variance)
                 self.bucket_number += 1
+
+                # remove 2 buckets from the current list item
                 cursor.compress_buckets_row(2)
+
+                # stop if the the max number of buckets does not exceed for the next item list  
                 if next_node.bucket_size_row <= self.max_buckets:
                     break
             else:
