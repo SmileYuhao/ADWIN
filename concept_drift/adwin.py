@@ -92,8 +92,9 @@ class Adwin:
                 external_variance = n1 * n2 * (u1 - u2) * (u1 - u2) / (n1 + n2)
 
                 # create and insert a new bucket into the next list item
-                next_node.insert_bucket(cursor.bucket_total[0] + cursor.bucket_total[1],
-                                        cursor.bucket_variance[0] + cursor.bucket_variance[1] + external_variance)
+                new_bucket_total = cursor.bucket_total[0] + cursor.bucket_total[1]
+                new_bucket_variance = cursor.bucket_variance[0] + cursor.bucket_variance[1] + external_variance
+                next_node.insert_bucket(new_bucket_total, new_bucket_variance)
                 self.bucket_number += 1
 
                 # remove 2 buckets from the current list item
