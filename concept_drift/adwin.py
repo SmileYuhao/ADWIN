@@ -35,6 +35,11 @@ class Adwin:
         self.list_row_buckets = AdwinList(self.max_buckets)
 
     def set_input(self, value):
+        """
+        Main method for adding a new data value and automatically detect a possible concept drift.
+        :param value: new data value
+        :return: true if there is a concept drift, otherwise false
+        """
         self.time += 1
         # Insert the new element
         self.__insert_element(value)
@@ -72,6 +77,7 @@ class Adwin:
         while cursor is not None:
             # Find the number of buckets in a row
             k = cursor.bucket_size_row
+
             # Merge buckets if row is full
             if k == self.max_buckets + 1:
                 next_node = cursor.next
@@ -110,6 +116,7 @@ class Adwin:
 
     def __reduce_window(self):
         """
+        Detect a change in the distribution and reduce the window if there is a concept drift.
         :return: boolean: whether has changed
         """
         is_changed = False
@@ -121,6 +128,7 @@ class Adwin:
                 n0, n1 = 0, self.width
                 u0, u1 = 0, self.total
 
+                # start building sub windows from the tail (old entries)
                 cursor = self.list_row_buckets.tail
                 i = self.last_bucket_row
                 while (not is_exit) and (cursor is not None):
@@ -130,11 +138,14 @@ class Adwin:
                             is_exit = True
                             break
 
+                        # sub window 0 is growing while sub window 1 is getting smaller
                         n0 += pow(2, i)
                         n1 -= pow(2, i)
                         u0 += cursor.bucket_total[k]
                         u1 -= cursor.bucket_total[k]
                         diff_value = (u0 / n0) - (u1 / n1)
+
+                        # remove old entries iff there is a concept drift and the minimum sub window length is matching
                         if n0 > self.min_length_sub_window + 1 and n1 > self.min_length_sub_window + 1 and \
                                 self.__reduce_expression(n0, n1, diff_value):
                             is_reduced_width, is_changed = True, True
@@ -147,7 +158,15 @@ class Adwin:
         return is_changed
 
     def __reduce_expression(self, n0, n1, diff_value):
-        # harmonic mean of n0 and n1 (originally 1 / (1/n0 + 1/n1))
+        """
+        Calculate epsilon_cut value and check if difference between the mean values of two sub windows is greater than
+        it.
+        :param n0: number of elements in sub window 0
+        :param n1: number of elements in sub window 1
+        :param diff_value: difference of mean values of both sub windows
+        :return: true if difference of mean values is higher than epsilon_cut
+        """
+        # harmonic mean of n0 and n1 (originally: 1 / (1/n0 + 1/n1))
         m = 1 / (n0 - self.min_length_sub_window + 1) + 1 / (n1 - self.min_length_sub_window + 1)
         d = log(2 * log(self.width) / self.delta)
         variance = self.variance / self.width
@@ -155,7 +174,8 @@ class Adwin:
         return fabs(diff_value) > epsilon
 
     def __delete_element(self):
-        """Remove a bucket from tail of window
+        """
+        Remove a bucket from tail of window
         :return: Number of elements to be deleted
         """
         node = self.list_row_buckets.tail
