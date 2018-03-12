@@ -176,6 +176,7 @@ class Adwin:
         Remove a bucket from tail of window
         :return: Number of elements to be deleted
         """
+        # last list item (the oldest bucket) with the oldest entry at first internal array position
         node = self.list_row_buckets.tail
         deleted_number = pow(2, self.last_bucket_row)
         self.width -= deleted_number
@@ -189,6 +190,7 @@ class Adwin:
         # Delete bucket
         node.compress_buckets_row(1)
         self.bucket_number -= 1
+        # if after removing an entry, the bucket becomes empty, remove it from the tail
         if node.bucket_size_row == 0:
             self.list_row_buckets.remove_from_tail()
             self.last_bucket_row -= 1
