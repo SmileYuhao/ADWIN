@@ -55,6 +55,21 @@ The Page-Hinkley test which is a sequential adaptation of the detection of an ab
 | lambda_: | Detection threshold |
 | alpha_ | Adaption variable for lambda adjustment |
 
+**Methods**
+
+```python
+set_input(value)
+```
+> Set input value to the drift detector - PageHinkley.
+
+| Parameters: | |
+|-------------|------|
+| Value: | Input value |
+
+| Return: | |
+|-------------|------|
+| Boolean | Whether has drift |
+
 ## Test
  Used the **elecNormNew** dataset;<br>
  Used **GaussianNB** as based classification;<br>
