@@ -4,6 +4,8 @@ ADWIN is a change detector and estimator that solves in a well-specified way the
 
 ADWIN keeps a variable-length window of recently seen items, with the property that the window has the maximal length statistically consistent with the hypothesis “there has been no change in the average value inside the window”. More precisely, an older fragment of the window is dropped if and only if there is enough evidence that its average value differs from that of the rest of the window.
 
+Based on: *"Learning from Time-Changing Data with Adaptive Windowing" by Albert Bifet and Ricard Gavaldà*
+
 ```python
 class concept_drift.adwin.Adwin
 	(delta=0.002, max_buckets=5, min_clock=32, min_length_window=10, min_length_sub_window=5)
@@ -44,6 +46,8 @@ for i in range(1000):
 
 ## Page-Hinckley Test
 The Page-Hinkley test which is a sequential adaptation of the detection of an abrupt change of the average of a Gaussian signal. It allows efficient detection of changes in the normal behaviour of a process which is established by a model.
+
+Based on: *"Knowledge Discovery from Data Streams" by João Gama (p.76)*
 
 ```python
  class concept_drift.page_hinkley.PageHinkley
