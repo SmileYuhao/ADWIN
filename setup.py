@@ -10,7 +10,7 @@ config = {
     'version': '1.0',
     'install_requires': [
         'numpy',
-        'pandas'
+        'pandas',
         'scikit-learn'
     ],
     'packages': ['concept_drift', 'classifier'],
